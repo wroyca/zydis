@@ -13,9 +13,12 @@ pub_hdrs = $($pub/ pub_hdrs)
 
 lib{zydis}: $pub/{$pub_hdrs}
 
+define inc: file
+inc{*}: extension = inc
+
 # Private headers and sources as well as dependencies.
 #
-lib{zydis}: {h c}{**} $impl_libs $intf_libs
+lib{zydis}: {h c inc}{**} $impl_libs $intf_libs
 
 # Build options.
 #
