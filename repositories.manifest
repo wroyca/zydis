@@ -8,4 +8,4 @@ summary: zydis project repository
 
 :
 role: prerequisite
-location: https://github.com/wroyca/zycore.git#main
+location: https://github.com/build2-packaging/zycore.git#main

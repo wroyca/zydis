@@ -1,6 +1,6 @@
 : 1
 name: libzydis
-version: 4.1.0+1
+version: 4.1.0+2
 language: c
 project: zydis
 summary: Fast and lightweight x86/x86-64 disassembler and code generation library
