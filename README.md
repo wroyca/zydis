@@ -1,15 +1,10 @@
-# zydis - <SUMMARY>
+# Zydis - Fast and lightweight x86/x86-64 disassembler and code generation library.
 
-This is a `build2` package repository for [`zydis`](https://<UPSTREAM-URL>),
-a <SUMMARY-OF-FUNCTIONALITY>.
+This is a [`build2`](https://build2.org/) package repository for [`zydis`](https://github.com/zyantific/zydis), a fast and lightweight x86/x86-64 disassembler and code generation library.
 
-This file contains setup instructions and other details that are more
-appropriate for development rather than consumption. If you want to use
-`zydis` in your `build2`-based project, then instead see the accompanying
-[`PACKAGE-README.md`](<PACKAGE>/PACKAGE-README.md) file.
+This file contains setup instructions and other details that are more appropriate for development rather than consumption. If you want to use [`zydis`](https://github.com/zyantific/zydis) in your [`build2`](https://build2.org/)-based project, then instead see the accompanying [`PACKAGE-README.md`](libzydis/PACKAGE-README.md) file.
 
-The development setup for `zydis` uses the standard `bdep`-based workflow.
-For example:
+The development setup for [`zydis`](https://github.com/zyantific/zydis) uses the standard [`bdep`](https://build2.org/bdep/doc/bdep.xhtml)-based workflow. For example:
 
 ```
 git clone .../zydis.git
