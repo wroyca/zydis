@@ -1,0 +1,16 @@
+: 1
+name: libzydis
+version: 4.1.0-a.0.z
+language: c
+project: zydis
+summary: Fast and lightweight x86/x86-64 disassembler and code generation library
+license: MIT
+description-file: README.md
+url: https://zydis.re/
+doc-url: https://doc.zydis.re/v4.1.0/html/
+src-url: https://github.com/zyantific/zydis/
+package-url: https://github.com/build2-packaging/zydis/
+email: packaging@build2.org ; Mailing list.
+depends: * build2 >= 0.17.0
+depends: * bpkg >= 0.17.0
+depends: libzycore ^1.5.0-

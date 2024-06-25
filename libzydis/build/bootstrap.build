@@ -1,0 +1,7 @@
+project = libzydis
+
+using version
+using config
+using test
+using install
+using dist

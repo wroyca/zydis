@@ -1,0 +1,3 @@
+import libs = libzydis%lib{zydis}
+
+exe{driver}: {h c}{**} $libs testscript{**}

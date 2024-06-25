@@ -1,0 +1,12 @@
+pub_hdrs = h{**}
+
+./: $pub_hdrs
+
+# Install into the Zydis/ subdirectory of, say, /usr/include/
+# recreating subdirectories.
+#
+h{*}:
+{
+  install         = include/Zydis/
+  install.subdirs = true
+}
