@@ -6,19 +6,27 @@ import intf_libs =+ libzycore%lib{zycore}
 # Public headers.
 #
 pub = [dir_path] ../include/Zydis/
-
 include $pub
-
 pub_hdrs = $($pub/ pub_hdrs)
 
-lib{zydis}: $pub/{$pub_hdrs}
-
+# Private headers
+#
 define inc: file
 inc{*}: extension = inc
+priv = {h c inc}{**}
 
-# Private headers and sources as well as dependencies.
+lib{zydis}: libul{zydis}: $pub/{$pub_hdrs} $priv $impl_libs $intf_libs
+
+# Zydis depends on Zycore, which only define ZYAN_DLLEXPORT as
+# __declspec(dllexport) when ZYAN_MSVC is defined. However, in some cases we may
+# be using a different compiler such as Clang on Windows. Here, symbol export
+# will fail because ZYAN_DLLEXPORT remains undefined or expands to nothing.
 #
-lib{zydis}: {h c inc}{**} $impl_libs $intf_libs
+# To work around this, we auto export symbols when compiling with Clang on
+# Windows
+#
+libs{zydis}: def{zydis}: include = ($c.target.system == 'win32-msvc')
+             def{zydis}: libul{zydis}
 
 # Build options.
 #
@@ -30,8 +38,11 @@ src_pfx_src = [dir_path] $src_root/src/
 c.poptions =+ "-I$out_pfx_src" "-I$src_pfx_src" \
               "-I$out_pfx_inc" "-I$src_pfx_inc"
 
-#obja{*}: c.poptions += -DZYDIS_STATIC_BUILD
-#objs{*}: c.poptions += -DZYDIS_SHARED_BUILD
+if ($c.id == 'clang')
+  cxx.loptions += -Wl,--export-all-symbols
+
+obja{*}: c.poptions += -DZYDIS_STATIC_BUILD
+objs{*}: c.poptions += -DZYDIS_SHOULD_EXPORT
 
 # Export options.
 #
@@ -41,8 +52,8 @@ lib{zydis}:
   c.export.libs = $intf_libs
 }
 
-#liba{zydis}: c.export.poptions += -DZYDIS_STATIC
-#libs{zydis}: c.export.poptions += -DZYDIS_SHARED
+liba{zydis}: c.export.poptions += -DZYDIS_STATIC_BUILD
+libs{zydis}: c.export.poptions += -DZYDIS_SHOULD_EXPORT
 
 # For pre-releases use the complete version to make sure they cannot
 # be used in place of another pre-release or the final version. See

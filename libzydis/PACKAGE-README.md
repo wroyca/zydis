@@ -22,10 +22,8 @@ This package provides the following importable targets:
 
 ```
 lib{zydis}
-lib{zycore}
 ```
 
 ### Importable targets description
 
 * `zydis` - Fast and lightweight x86/x86-64 disassembler and code generation library.
-* `zycore` - Internal library providing platform-independent types, macros, and fallbacks for environments without libc.
