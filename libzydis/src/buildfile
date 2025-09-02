@@ -17,16 +17,35 @@ priv = {h c inc}{**}
 
 lib{zydis}: libul{zydis}: $pub/{$pub_hdrs} $priv $impl_libs $intf_libs
 
-# Zydis depends on Zycore, which only define ZYAN_DLLEXPORT as
-# __declspec(dllexport) when ZYAN_MSVC is defined. However, in some cases we may
-# be using a different compiler such as Clang on Windows. Here, symbol export
-# will fail because ZYAN_DLLEXPORT remains undefined or expands to nothing.
+# Symbol export configuration
 #
-# To work around this, we auto export symbols when compiling with Clang on
-# Windows
+# On Windows, dynamic libraries require explicit annotation of exported symbols.
+# build2 supports two main strategies to automate this, depending on the
+# toolchain:
+#
+# https://build2.org/build2/doc/build2-build-system-manual.xhtml#cc-auto-symexport
+#
+# 1. MSVC (win32-msvc target): we rely on a definition file (def{}). build2
+#    automatically generates the .def export list, which is then passed to the
+#    linker. This avoids the need for `__declspec(dllexport)` annotations in the
+#    source code.
+#
+# 2. GNU-style toolchains targeting Windows (MinGW, Clang/LLVM with COFF): we
+#    instead request the linker to export all symbols from the object files.
+#    This is done by passing `-Wl,--export-all-symbols`.
+#
+# Note that both approaches are mutually exclusive and selected based on
+# `$c.target.system`/`$c.id`. Other platforms ignore this configuration.
 #
 libs{zydis}: def{zydis}: include = ($c.target.system == 'win32-msvc')
              def{zydis}: libul{zydis}
+
+# Use linker-based automatic export for GNU-style toolchains on Windows
+#
+if ($c.target.system == 'mingw32' || \
+    ($c.target.class == 'windows' && $c.id == 'clang' \
+                                  && $c.target.system != 'win32-msvc'))
+  c.loptions += -Wl,--export-all-symbols
 
 # Build options.
 #
@@ -38,11 +57,11 @@ src_pfx_src = [dir_path] $src_root/src/
 c.poptions =+ "-I$out_pfx_src" "-I$src_pfx_src" \
               "-I$out_pfx_inc" "-I$src_pfx_inc"
 
-if ($c.id == 'clang')
-  cxx.loptions += -Wl,--export-all-symbols
-
+# Define ZYDIS_STATIC_BUILD for both static and shared library consumers to
+# disable upstream export decorations and rely on automatic symbol export
+#
 obja{*}: c.poptions += -DZYDIS_STATIC_BUILD
-objs{*}: c.poptions += -DZYDIS_SHOULD_EXPORT
+objs{*}: c.poptions += -DZYDIS_STATIC_BUILD
 
 # Export options.
 #
@@ -52,8 +71,11 @@ lib{zydis}:
   c.export.libs = $intf_libs
 }
 
+# Define ZYDIS_STATIC_BUILD for both static and shared library consumers to
+# disable upstream export decorations and rely on automatic symbol export
+#
 liba{zydis}: c.export.poptions += -DZYDIS_STATIC_BUILD
-libs{zydis}: c.export.poptions += -DZYDIS_SHOULD_EXPORT
+libs{zydis}: c.export.poptions += -DZYDIS_STATIC_BUILD
 
 # For pre-releases use the complete version to make sure they cannot
 # be used in place of another pre-release or the final version. See
